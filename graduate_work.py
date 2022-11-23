@@ -41,10 +41,9 @@ class UserVK:
         responce = requests.get(URL, params={**self.params, **params})
         try:
             responce.raise_for_status()
-            print('Соединение установлено.')
+            print('Соединение с Api VK установлено.')
         except Exception as e:
             print('Ошибка при загрузке страницы: ' + str(e))
-        # pprint(responce.json())
         return responce.json()
 
     def urls_list(self, dict_info):
@@ -86,27 +85,26 @@ class UserYD:
         responce_ = requests.put(f'{self.url}?path={name_folder}', headers=self.headers)
         try:
             responce_.raise_for_status()
-            print('Соединение установлено.')
+            print('Соединение с Яндекс,Диск для создания папки установлено.')
         except Exception as e:
             print('Ошибка при загрузке страницы: ' + str(e))
         print("Папка успешно создана.")
 
     def upload_file(self, name_folder, photos_name, photos_url):
-
         url_ = 'https://cloud-api.yandex.net/v1/disk/resources/upload'
-        # path = str(name_folder)+'%2F'+str(photos_name)
         path = str(name_folder) + '/' + str(photos_name)
-        # path = str(photos_name)
-        # print(path)
         params = {'path': path, 'url': photos_url}
         responce = requests.post(url_, params=params, headers=self.headers)
+        try:
+            responce.raise_for_status()
+            print('Соединение с Яндекс.Диском для загрузки фотографий установлено.')
+        except Exception as e:
+            print('Ошибка при загрузке страницы: ' + str(e))
 
 
 user_vk = UserVK(token_VK, id_VK)
 info_dict = user_vk.get_photos(album_choice, number_of_photos)
-pprint(user_vk.urls_list(info_dict))
 url_dict_ = user_vk.urls_list(info_dict)
-
 user_yd = UserYD(token_YD)
 user_yd.create_folder(folder_name)
 number = 0
@@ -114,6 +112,7 @@ for k, v in url_dict_.items():
     number += 1
     user_yd.upload_file(folder_name, k, v)
     print('Загружена фотография ', number)
+print('Все фотографии успешно загружены в папку.')
 
 
 
