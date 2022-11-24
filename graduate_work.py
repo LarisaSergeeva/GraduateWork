@@ -3,20 +3,11 @@ from pprint import pprint
 
 import requests
 
-from TOKENS_ID import id_VK
+# from TOKENS_ID import id_VK
 from TOKENS_ID import token_VK
 from TOKENS_ID import token_YD
 
 import time
-
-
-# id_VK = input('Введите id пользователя Вконтакте: ')
-album_choice = input('Выберете фотографии из какого альбома Вы хотите загрузить на Яндекс.Диск: '
-                     '1 - фотографии профиля,'
-                     '2 - фотографии со стены,'
-                     '3 - фотографии из других альбомов: ')
-number_of_photos = input('Введите число фотографий для загрузки: ')
-folder_name = input('Введите имя папки на Яндекс.Диске для загрузки фотографий: ')
 
 
 class UserVK:
@@ -102,17 +93,30 @@ class UserYD:
             print('Ошибка при загрузке страницы: ' + str(e))
 
 
-user_vk = UserVK(token_VK, id_VK)
-info_dict = user_vk.get_photos(album_choice, number_of_photos)
-url_dict_ = user_vk.urls_list(info_dict)
-user_yd = UserYD(token_YD)
-user_yd.create_folder(folder_name)
-number = 0
-for k, v in url_dict_.items():
-    number += 1
-    user_yd.upload_file(folder_name, k, v)
-    print('Загружена фотография ', number)
-print('Все фотографии успешно загружены в папку.')
+def main():
+    id_vk = input('Введите id пользователя Вконтакте: ')
+    album_choice = input('Выберете фотографии из какого альбома Вконтакте Вы хотите загрузить на Яндекс.Диск: '
+                         '1 - фотографии профиля,'
+                         '2 - фотографии со стены,'
+                         '3 - фотографии из других альбомов: ')
+    number_of_photos = input('Введите число фотографий для загрузки: ')
+
+    user_vk = UserVK(token_VK, id_vk)
+    info_dict = user_vk.get_photos(album_choice, number_of_photos)
+    url_dict = user_vk.urls_list(info_dict)
+    folder_name = input('Введите имя папки на Яндекс.Диске для загрузки фотографий: ')
+    user_yd = UserYD(token_YD)
+    user_yd.create_folder(folder_name)
+    number = 0
+    for k, v in url_dict.items():
+        number += 1
+        user_yd.upload_file(folder_name, k, v)
+        print('Загружена фотография ', number)
+    print('Все фотографии успешно загружены в папку.')
+
+
+if __name__ == '__main__':
+    main()
 
 
 
