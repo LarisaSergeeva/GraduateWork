@@ -24,23 +24,16 @@ class UserVK:
             params = {'owner_id': self.id, 'album_id': 'profile', 'extended': '1', 'count': number}
         elif album == '2':
             params = {'owner_id': self.id, 'album_id': 'wall', 'extended': '1', 'count': number}
-        elif album == '3':
-            album_id = input('Введите id, интересующего Вас альбома: ')
-            params = {'owner_id': self.id, 'album_id': album_id, 'extended': '1', 'count': number}
         else:
             print('При выборе альбома произошла ошибка.')
         responce = requests.get(URL, params={**self.params, **params})
-        try:
-            responce.raise_for_status()
-            print('Соединение с Api VK установлено.')
-        except Exception as e:
-            print('Ошибка при загрузке страницы: ' + str(e))
         return responce.json()
 
     def urls_list(self, dict_info):
         photos_list = list()
         url_dict = {}
         names_list = list()
+
         for _ in range(len(dict_info['response']['items'])):
             photos_dict = {}
             name = str(dict_info['response']['items'][_]['likes']['count'])
@@ -103,6 +96,10 @@ def main():
 
     user_vk = UserVK(token_VK, id_vk)
     info_dict = user_vk.get_photos(album_choice, number_of_photos)
+    if list(info_dict.keys())[0] == "error":
+        print('Сообщение об ошибке:', info_dict['error']['error_msg'], '.\n', 'Код ошибки: ',
+              info_dict['error']['error_code'])
+        return
     url_dict = user_vk.urls_list(info_dict)
     folder_name = input('Введите имя папки на Яндекс.Диске для загрузки фотографий: ')
     user_yd = UserYD(token_YD)
